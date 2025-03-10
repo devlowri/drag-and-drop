@@ -10,7 +10,9 @@ const ProductCard = ({ id, image, name, price }: ProductI) => {
     <div
       className="productCard"
       draggable="true"
-      onDragStart={(e) => handleProductDragStart(e, id)}
+      onDragStart={(e) => {
+        if (handleProductDragStart) handleProductDragStart(e, id);
+      }}
       onDrag={handleProductDrag}
       onDragEnd={handleProductDragEnd}
     >
