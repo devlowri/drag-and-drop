@@ -172,6 +172,7 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
 
     const productId = e.dataTransfer.getData("id");
     setProductToSectionById(productId, rowIndex);
+    setProducts(products);
   };
 
   const handleProductDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
@@ -208,8 +209,6 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
       );
     }
   };
-
-  console.log("sections", sections);
 
   return (
     <SectionsContext.Provider
