@@ -13,7 +13,9 @@ const DropArea = ({ rowIndex }: DropAreaI) => {
     <div
       className={`dropArea ${isDragging ? "visible" : ""}`}
       onDragOver={handleProductDragOver}
-      onDrop={(e) => handleProductDrop(e, rowIndex)}
+      onDrop={(e) => {
+        if (handleProductDrop) handleProductDrop(e, rowIndex);
+      }}
     ></div>
   );
 };

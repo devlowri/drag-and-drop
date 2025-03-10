@@ -17,7 +17,9 @@ const SectionRow = ({ rowIndex, products }: SectionRowI) => {
         className="sectionRow"
         onDragOver={handleProductDragOver}
         onDragLeave={handleProductDragLeave}
-        onDrop={(e) => handleProductDrop(e, rowIndex)}
+        onDrop={(e) => {
+          if (handleProductDrop) handleProductDrop(e, rowIndex);
+        }}
       >
         {products?.map((product, index) => {
           return <ProductCard key={`${product.name}_${index}`} {...product} />;
