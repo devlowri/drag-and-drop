@@ -15,6 +15,9 @@ const Options = () => {
         onChange={(e) => {
           setInputZoom(e.target.value);
         }}
+        onTouchEnd={() => {
+          if (setZoom) setZoom(inputZoom);
+        }}
         onMouseUp={() => {
           if (setZoom) setZoom(inputZoom);
         }}
