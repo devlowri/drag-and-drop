@@ -21,6 +21,8 @@ interface SectionsContextI {
   moveSectionUp?: MoveSectionUpI;
   moveSectionDown?: MoveSectionDownI;
   moveSectionToBottom?: MoveSectionToBottomI;
+  zoom: string;
+  setZoom?: (zoom: string) => void;
 }
 
 export interface SectionI {
@@ -72,6 +74,7 @@ interface MoveSectionToBottomI {
 const SectionsContext = createContext<SectionsContextI>({
   sections: [],
   products: [],
+  zoom: "100",
 });
 
 export const PRODUCTS_PER_SECTION = 3;
@@ -125,6 +128,7 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
   const [position, setPosition] = useState<SectionAligmentT | undefined>(
     undefined
   );
+  const [zoom, setZoom] = useState("100");
 
   const ghostRef = useRef<HTMLDivElement | null>(null);
 
@@ -351,6 +355,8 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
         moveSectionUp,
         moveSectionDown,
         moveSectionToBottom,
+        zoom,
+        setZoom,
       }}
     >
       {children}
