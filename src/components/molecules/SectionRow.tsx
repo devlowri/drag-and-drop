@@ -9,6 +9,10 @@ import AlignLeftIcon from "../atoms/icons/alignLeft";
 import AlignCenterIcon from "../atoms/icons/alignCenter";
 import AlignRightIcon from "../atoms/icons/alignRight";
 import TrashIcon from "../atoms/icons/trash";
+import ArrowBarToUpIcon from "../atoms/icons/arrowBarToUp";
+import ArrowBarToDownIcon from "../atoms/icons/arrowBarToDown";
+import ArrowNarrowDownIcon from "../atoms/icons/arrowNarrowDown";
+import ArrowNarrowUpIcon from "../atoms/icons/arrowNarrowUp";
 
 interface SectionRowI {
   rowIndex: number;
@@ -17,13 +21,20 @@ interface SectionRowI {
 
 const SectionRow = ({ rowIndex, section }: SectionRowI) => {
   const {
+    sections,
     handleProductDragOver,
     handleProductDrop,
     handleProductDragLeave,
     updateSectionAligment,
     removeSection,
+    moveSectionToTop,
+    moveSectionUp,
+    moveSectionDown,
+    moveSectionToBottom,
   } = useSections();
 
+  const isFirstSection = rowIndex === 0;
+  const isLastSection = rowIndex === sections.length - 1;
   const hasMaximumProducts = section?.products?.length === PRODUCTS_PER_SECTION;
 
   return (
@@ -47,14 +58,43 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
           return <ProductCard key={`${product.name}_${index}`} {...product} />;
         })}
       </div>
-      <div className="sectionRowDrag">
-        <div className="sectionRowDragIndicator">
-          {Array.from({ length: 8 }).map((_, index) => {
-            return (
-              <div key={`circle_${index}`} className="dragIndicatorCircle" />
-            );
-          })}
-        </div>
+      <div className="sectionRowPosition">
+        <button
+          className="sectionRowButton"
+          onClick={() => {
+            if (moveSectionToTop) moveSectionToTop(rowIndex);
+          }}
+          disabled={isFirstSection}
+        >
+          <ArrowBarToUpIcon />
+        </button>
+        <button
+          className="sectionRowButton up"
+          onClick={() => {
+            if (moveSectionUp) moveSectionUp(rowIndex);
+          }}
+          disabled={isFirstSection}
+        >
+          <ArrowNarrowUpIcon />
+        </button>
+        <button
+          className="sectionRowButton down"
+          onClick={() => {
+            if (moveSectionDown) moveSectionDown(rowIndex);
+          }}
+          disabled={isLastSection}
+        >
+          <ArrowNarrowDownIcon />
+        </button>
+        <button
+          className="sectionRowButton"
+          onClick={() => {
+            if (moveSectionToBottom) moveSectionToBottom(rowIndex);
+          }}
+          disabled={isLastSection}
+        >
+          <ArrowBarToDownIcon />
+        </button>
       </div>
       <div className="sectionRowOptions">
         <div className="sectionRowOptionsAlignments">
@@ -90,7 +130,7 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
           </button>
         </div>
         <button
-          className="sectionRowRemove"
+          className="sectionRowButton"
           onClick={() => {
             if (removeSection) removeSection(rowIndex);
           }}

@@ -17,6 +17,10 @@ interface SectionsContextI {
   handleProductDragLeave?: (e: React.DragEvent<HTMLDivElement>) => void;
   updateSectionAligment?: UpdateSectionAligmentI;
   removeSection?: RemoveSectionI;
+  moveSectionToTop?: MoveSectionToTopI;
+  moveSectionUp?: MoveSectionUpI;
+  moveSectionDown?: MoveSectionDownI;
+  moveSectionToBottom?: MoveSectionToBottomI;
 }
 
 export interface SectionI {
@@ -46,6 +50,22 @@ interface UpdateSectionAligmentI {
 }
 
 interface RemoveSectionI {
+  (index: number): void;
+}
+
+interface MoveSectionToTopI {
+  (index: number): void;
+}
+
+interface MoveSectionUpI {
+  (index: number): void;
+}
+
+interface MoveSectionDownI {
+  (index: number): void;
+}
+
+interface MoveSectionToBottomI {
   (index: number): void;
 }
 
@@ -261,6 +281,58 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
     setSections((prevSections) => prevSections.filter((_, i) => i !== index));
   };
 
+  const moveSectionToTop: MoveSectionToTopI = (index) => {
+    setSections((prevSections) => {
+      if (index <= 0) return prevSections;
+
+      const newSections = [...prevSections];
+      const [movedSection] = newSections.splice(index, 1);
+      newSections.unshift(movedSection);
+
+      return newSections;
+    });
+  };
+
+  const moveSectionUp: MoveSectionUpI = (index) => {
+    setSections((prevSections) => {
+      if (index <= 0) return prevSections;
+
+      const newSections = [...prevSections];
+      [newSections[index], newSections[index - 1]] = [
+        newSections[index - 1],
+        newSections[index],
+      ];
+
+      return newSections;
+    });
+  };
+
+  const moveSectionDown: MoveSectionDownI = (index) => {
+    setSections((prevSections) => {
+      if (index >= prevSections.length - 1) return prevSections;
+
+      const newSections = [...prevSections];
+      [newSections[index], newSections[index + 1]] = [
+        newSections[index + 1],
+        newSections[index],
+      ];
+
+      return newSections;
+    });
+  };
+
+  const moveSectionToBottom: MoveSectionToBottomI = (index) => {
+    setSections((prevSections) => {
+      if (index >= prevSections.length - 1) return prevSections;
+
+      const newSections = [...prevSections];
+      const [movedSection] = newSections.splice(index, 1);
+      newSections.push(movedSection);
+
+      return newSections;
+    });
+  };
+
   return (
     <SectionsContext.Provider
       value={{
@@ -275,6 +347,10 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
         handleProductDragLeave,
         updateSectionAligment,
         removeSection,
+        moveSectionToTop,
+        moveSectionUp,
+        moveSectionDown,
+        moveSectionToBottom,
       }}
     >
       {children}

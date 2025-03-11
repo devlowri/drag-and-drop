@@ -143,30 +143,19 @@ body {
   pointer-events: none;
 }
 
-.sectionRowDrag {
+.sectionRowPosition {
+  width: 2.5rem;
+  height: 100%;
+  position: absolute;
   top: 0;
   left: 0;
-  position: absolute;
-  width: 2rem;
-  height: 100%;
-  background-color: var(--drag-section-color);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  cursor: grab;
-}
-
-.sectionRowDragIndicator {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem 0.25rem;
-}
-
-.dragIndicatorCircle {
-  border-radius: 100%;
-  width: 0.25rem;
-  height: 0.25rem;
-  background-color: var(--drag-indicator-circle-color);
+  gap: 0.5rem;
+  padding: 1.5rem 0rem;
+  padding-left: 0.5rem;
 }
 
 .sectionRowOptions {
@@ -192,7 +181,7 @@ body {
 }
 
 .sectionRowOptionsAlignments button,
-.sectionRowRemove {
+.sectionRowButton {
   background-color: white;
   color: var(--card-foreground-color);
   border: unset;
@@ -205,7 +194,7 @@ body {
 }
 
 .sectionRowOptionsAlignments button:hover,
-.sectionRowRemove:hover {
+.sectionRowButton:hover:not(:disabled) {
   background-color: var(--drag-section-color);
 }
 
@@ -213,7 +202,20 @@ body {
   background-color: var(--drag-section-color);
 }
 
-.sectionRowRemove {
+.sectionRowButton {
   border: 1px solid var(--drop-zone-border-color);
   border-radius: 0.5rem;
+}
+
+.sectionRowButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.sectionRowButton.up {
+  margin-bottom: auto;
+}
+
+.sectionRowButton.dowm {
+  margin-top: auto;
 }

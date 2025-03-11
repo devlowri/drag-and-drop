@@ -10,7 +10,6 @@ const AlignRightIcon = () => (
     strokeLinecap="round"
     strokeLinejoin="round"
     strokeWidth={2}
-    className="icon icon-tabler icons-tabler-outline icon-tabler-align-right"
   >
     <path stroke="none" d="M0 0h24v24H0z" />
     <path d="M4 6h16M10 12h10M6 18h14" />
