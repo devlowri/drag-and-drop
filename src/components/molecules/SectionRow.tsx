@@ -58,6 +58,9 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
           return <ProductCard key={`${product.name}_${index}`} {...product} />;
         })}
       </div>
+      <div className="sectionRowSelectedAlignment">
+        Aligned to the <b>{section?.alignment}</b>
+      </div>
       <div className="sectionRowPosition">
         <button
           className="sectionRowButton"
