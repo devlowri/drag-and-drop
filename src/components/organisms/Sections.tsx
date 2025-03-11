@@ -11,7 +11,7 @@ const Sections = () => {
         <SectionRow
           key={`section_row_${index}`}
           rowIndex={index}
-          products={section.products}
+          section={section}
         />
       ))}
     </div>

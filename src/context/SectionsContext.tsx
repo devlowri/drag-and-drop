@@ -15,11 +15,16 @@ interface SectionsContextI {
   handleProductDragOver?: (e: React.DragEvent<HTMLDivElement>) => void;
   handleProductDrop?: HandleProductDropI;
   handleProductDragLeave?: (e: React.DragEvent<HTMLDivElement>) => void;
+  updateSectionAligment?: UpdateSectionAligmentI;
+  removeSection?: RemoveSectionI;
 }
 
-interface SectionI {
+export interface SectionI {
   products?: ProductI[];
+  alignment?: SectionAligmentT;
 }
+
+export type SectionAligmentT = "left" | "center" | "right";
 
 export interface ProductI {
   id: number;
@@ -36,15 +41,29 @@ interface HandleProductDropI {
   (e: React.DragEvent<HTMLDivElement>, rowIndex: number): void;
 }
 
+interface UpdateSectionAligmentI {
+  (value: SectionAligmentT, index: number): void;
+}
+
+interface RemoveSectionI {
+  (index: number): void;
+}
+
 const SectionsContext = createContext<SectionsContextI>({
-  sections: [{ products: [] }],
+  sections: [],
   products: [],
 });
 
 export const PRODUCTS_PER_SECTION = 3;
 
 const SectionsProvider = ({ children }: SectionsProviderI) => {
-  const [sections, setSections] = useState<SectionI[]>([{}, {}, {}, {}, {}]);
+  const [sections, setSections] = useState<SectionI[]>([
+    { alignment: "left" },
+    { alignment: "left" },
+    { alignment: "left" },
+    { alignment: "left" },
+    { alignment: "left" },
+  ]);
   const [products, setProducts] = useState<ProductI[]>([
     {
       id: 0,
@@ -83,6 +102,9 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
     },
   ]);
   const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState<SectionAligmentT | undefined>(
+    undefined
+  );
 
   const ghostRef = useRef<HTMLDivElement | null>(null);
 
@@ -147,9 +169,9 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
 
     if (zone < 0.33) {
       container.prepend(productPlaceholder);
+      setPosition("left");
     } else if (zone >= 0.33 && zone < 0.66) {
       const children = Array.from(container.children);
-      console.log(children);
       if (children.length > 0) {
         const middleIndex = Math.floor(children.length / 2);
         const middleElement = children[middleIndex];
@@ -157,8 +179,10 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
       } else {
         container.appendChild(productPlaceholder);
       }
+      setPosition("center");
     } else {
       container.appendChild(productPlaceholder);
+      setPosition("right");
     }
   };
 
@@ -178,12 +202,10 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
   const handleProductDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
 
-    // Verifica si el nuevo destino sigue siendo un hijo del contenedor
     if (e.relatedTarget && container.contains(e.relatedTarget as Node)) {
-      return; // Si sigue dentro del contenedor, no eliminamos el placeholder
+      return;
     }
 
-    // Elimina el placeholder solo si realmente se salió del contenedor
     const productPlaceholder = container.querySelector(".productPlaceholder");
     if (productPlaceholder) {
       productPlaceholder.remove();
@@ -197,17 +219,46 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
         prevSections.map((section, index) => {
           if (index === rowIndex) {
             const product = products.find((product) => product.id === parsedId);
-            return {
-              ...section,
-              products: section.products
-                ? [...section.products, product]
-                : [product],
-            } as SectionI;
+            if (!section.products) {
+              return {
+                ...section,
+                products: [product],
+              } as SectionI;
+            } else {
+              return {
+                ...section,
+                products: (() => {
+                  const updatedProducts = [...section.products];
+                  if (position === "left") {
+                    updatedProducts.unshift(product!);
+                  }
+                  if (position === "center") {
+                    updatedProducts.splice(1, 0, product!);
+                  }
+                  if (position === "right") {
+                    updatedProducts.push(product!);
+                  }
+                  return updatedProducts;
+                })(),
+              } as SectionI;
+            }
           }
           return section;
         })
       );
     }
+  };
+
+  const updateSectionAligment: UpdateSectionAligmentI = (value, index) => {
+    setSections((prevSections) =>
+      prevSections.map((section, i) =>
+        i === index ? { ...section, alignment: value } : section
+      )
+    );
+  };
+
+  const removeSection: RemoveSectionI = (index) => {
+    setSections((prevSections) => prevSections.filter((_, i) => i !== index));
   };
 
   return (
@@ -222,6 +273,8 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
         handleProductDragOver,
         handleProductDrop,
         handleProductDragLeave,
+        updateSectionAligment,
+        removeSection,
       }}
     >
       {children}
