@@ -10,7 +10,7 @@ const Options = () => {
       <input
         type="range"
         min="50"
-        max="100"
+        max="125"
         value={inputZoom}
         onChange={(e) => {
           setInputZoom(e.target.value);

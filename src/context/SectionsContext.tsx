@@ -1,5 +1,11 @@
 "use client";
-import React, { createContext, useContext, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 interface SectionsProviderI {
   children: React.ReactNode;
@@ -83,9 +89,6 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
   const [sections, setSections] = useState<SectionI[]>([
     { alignment: "left" },
     { alignment: "left" },
-    { alignment: "left" },
-    { alignment: "left" },
-    { alignment: "left" },
   ]);
   const [products, setProducts] = useState<ProductI[]>([
     {
@@ -128,14 +131,16 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
   const [position, setPosition] = useState<SectionAligmentT | undefined>(
     undefined
   );
+  const [productId, setProductId] = useState<number | undefined>(undefined);
   const [zoom, setZoom] = useState("100");
+  const [productIsRemovable, setProductIsRemovable] = useState(false);
 
   const ghostRef = useRef<HTMLDivElement | null>(null);
 
   const handleProductDragStart: HandleProductDragStartI = (e, id) => {
     setIsDragging(true);
     e.dataTransfer.setDragImage(new Image(), 0, 0);
-    e.dataTransfer.setData("id", id.toString());
+    setProductId(id);
 
     const originalRect = e.currentTarget.getBoundingClientRect();
 
@@ -218,8 +223,7 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
       productPlaceholder.remove();
     }
 
-    const productId = e.dataTransfer.getData("id");
-    setProductToSectionById(productId, rowIndex);
+    setProductToSectionById(rowIndex);
     setProducts(products);
   };
 
@@ -236,41 +240,58 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
     }
   };
 
-  const setProductToSectionById = (id: string, rowIndex: number) => {
-    const parsedId = Number(id);
-    if (!isNaN(parsedId)) {
-      setSections((prevSections) =>
-        prevSections.map((section, index) => {
-          if (index === rowIndex) {
-            const product = products.find((product) => product.id === parsedId);
-            if (!section.products) {
-              return {
-                ...section,
-                products: [product],
-              } as SectionI;
+  const setProductToSectionById = (rowIndex: number) => {
+    setSections((prevSections) => {
+      const updatedSections = prevSections.map((section, index) => {
+        if (index === rowIndex) {
+          const updatedSection = { ...section };
+          let product: ProductI | undefined = products.find(
+            (product) => product.id === productId
+          );
+          if (!product) {
+            product = sections
+              .flatMap((s) => s.products)
+              .find((p) => p?.id === productId);
+            if (section.products?.some((p) => p.id === productId)) {
+              updatedSection.products = updatedSection.products?.filter(
+                (p) => p.id !== productId
+              );
             } else {
-              return {
-                ...section,
-                products: (() => {
-                  const updatedProducts = [...section.products];
-                  if (position === "left") {
-                    updatedProducts.unshift(product!);
-                  }
-                  if (position === "center") {
-                    updatedProducts.splice(1, 0, product!);
-                  }
-                  if (position === "right") {
-                    updatedProducts.push(product!);
-                  }
-                  return updatedProducts;
-                })(),
-              } as SectionI;
+              console.log(
+                "aquí debo borrar el producto en una section distinta"
+              );
             }
           }
-          return section;
-        })
-      );
-    }
+          if (!updatedSection.products) {
+            return {
+              ...updatedSection,
+              products: [product],
+            } as SectionI;
+          } else {
+            return {
+              ...updatedSection,
+              products: (() => {
+                const updatedProducts = [...updatedSection.products];
+                if (position === "left") {
+                  updatedProducts.unshift(product!);
+                }
+                if (position === "center") {
+                  updatedProducts.splice(1, 0, product!);
+                }
+                if (position === "right") {
+                  updatedProducts.push(product!);
+                }
+                return updatedProducts;
+              })(),
+            } as SectionI;
+          }
+        }
+        return section;
+      });
+      handleProductDragEnd();
+      setProductIsRemovable(true);
+      return updatedSections;
+    });
   };
 
   const updateSectionAligment: UpdateSectionAligmentI = (value, index) => {
@@ -336,6 +357,18 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
       return newSections;
     });
   };
+
+  useEffect(() => {
+    if (productIsRemovable) {
+      if (products.some((p) => p.id === productId)) {
+        setProducts((prevProducts) =>
+          prevProducts.filter((p) => p.id !== productId)
+        );
+      }
+      setProductId(undefined);
+      setProductIsRemovable(false);
+    }
+  }, [productIsRemovable, productId, products]);
 
   return (
     <SectionsContext.Provider

@@ -55,7 +55,15 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
         }}
       >
         {section?.products?.map((product, index) => {
-          return <ProductCard key={`${product.name}_${index}`} {...product} />;
+          return (
+            <ProductCard
+              key={`${product.name}_${index}`}
+              removeFn={() => {
+                console.log("borrar de section");
+              }}
+              {...product}
+            />
+          );
         })}
       </div>
       <div className="sectionRowSelectedAlignment">

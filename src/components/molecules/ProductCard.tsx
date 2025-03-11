@@ -1,8 +1,13 @@
 "use client";
 import { ProductI, useSections } from "@/context/SectionsContext";
 import Image from "next/image";
+import TrashIcon from "../atoms/icons/trash";
 
-const ProductCard = ({ id, image, name, price }: ProductI) => {
+interface ProductCardId extends ProductI {
+  removeFn?: () => void;
+}
+
+const ProductCard = ({ removeFn, id, image, name, price }: ProductCardId) => {
   const { handleProductDragStart, handleProductDrag, handleProductDragEnd } =
     useSections();
 
@@ -16,6 +21,14 @@ const ProductCard = ({ id, image, name, price }: ProductI) => {
       onDrag={handleProductDrag}
       onDragEnd={handleProductDragEnd}
     >
+      <button
+        className="productCardRemove"
+        onClick={() => {
+          if (removeFn) removeFn();
+        }}
+      >
+        <TrashIcon />
+      </button>
       <picture className="productCardImageContainer">
         <Image
           src={image}
