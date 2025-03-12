@@ -125,6 +125,7 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
   const [zoom, setZoom] = useState("100");
   const [productIsRemovable, setProductIsRemovable] = useState(false);
   const [addProductModal, setAddProductModal] = useState(false);
+  const [productsToBeSaved, setProductsToBeSaved] = useState<ProductI[]>([]);
 
   const ghostRef = useRef<HTMLDivElement | null>(null);
 
@@ -295,7 +296,15 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
   };
 
   const removeSection: RemoveSectionI = (index) => {
-    setSections((prevSections) => prevSections.filter((_, i) => i !== index));
+    setSections((prevSections) =>
+      prevSections.filter((_, i) => {
+        if (i === index) {
+          const _products = prevSections[index].products;
+          if (_products) setProductsToBeSaved(_products);
+        }
+        return i !== index;
+      })
+    );
   };
 
   const moveSectionToTop: MoveSectionToTopI = (index) => {
@@ -416,6 +425,13 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
       setRowWithProductId(undefined);
     }
   }, [productIsRemovable, productId, products, rowWithProductId]);
+
+  useEffect(() => {
+    if (productsToBeSaved.length > 0) {
+      setProducts((prevProducts) => [...prevProducts, ...productsToBeSaved]);
+      setProductsToBeSaved([]);
+    }
+  }, [productsToBeSaved]);
 
   return (
     <SectionsContext.Provider
