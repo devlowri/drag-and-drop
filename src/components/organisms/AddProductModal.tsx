@@ -51,7 +51,7 @@ const AddProductModal = () => {
             <input
               type="text"
               required
-              placeholder="Introduce el nombre del producto"
+              placeholder="Enter the product name"
               value={name}
               onChange={(e) => setName(e.target.value)}
             ></input>
@@ -63,7 +63,7 @@ const AddProductModal = () => {
               min="0.01"
               step="0.01"
               required
-              placeholder="Introduce el precio del producto"
+              placeholder="Enter the product price"
               value={price}
               onChange={(e) => {
                 const value = parseFloat(e.target.value);
