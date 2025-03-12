@@ -24,7 +24,7 @@ const AddProductModal = () => {
     }
   };
 
-  const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitForm = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (addNewProduct && name && price && image) {
       const parsedPrice = parseFloat(price);
       if (!isNaN(parsedPrice)) {

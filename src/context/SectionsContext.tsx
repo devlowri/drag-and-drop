@@ -93,7 +93,7 @@ interface RemoveProductFromSectionI {
 }
 
 interface AddNewProductI {
-  (e: React.FormEvent, data: Omit<ProductI, "id">): void;
+  (e: React.MouseEvent<HTMLButtonElement>, data: Omit<ProductI, "id">): void;
 }
 
 const SectionsContext = createContext<SectionsContextI>({
