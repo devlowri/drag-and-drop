@@ -8,8 +8,12 @@ interface ProductCardId extends ProductI {
 }
 
 const ProductCard = ({ removeFn, id, image, name, price }: ProductCardId) => {
-  const { handleProductDragStart, handleProductDrag, handleProductDragEnd } =
-    useSections();
+  const {
+    handleProductDragStart,
+    handleProductDrag,
+    handleProductDragEnd,
+    removeProductFromProductsList,
+  } = useSections();
 
   return (
     <div
@@ -24,7 +28,8 @@ const ProductCard = ({ removeFn, id, image, name, price }: ProductCardId) => {
       <button
         className="productCardRemove"
         onClick={() => {
-          if (removeFn) removeFn();
+          if (removeFn) return removeFn();
+          if (removeProductFromProductsList) removeProductFromProductsList(id);
         }}
       >
         <TrashIcon />

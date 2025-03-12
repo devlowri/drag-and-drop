@@ -31,6 +31,7 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
     moveSectionUp,
     moveSectionDown,
     moveSectionToBottom,
+    removeProductFromSection,
   } = useSections();
 
   const isFirstSection = rowIndex === 0;
@@ -59,7 +60,8 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
             <ProductCard
               key={`${product.name}_${index}`}
               removeFn={() => {
-                console.log("borrar de section");
+                if (removeProductFromSection)
+                  removeProductFromSection(product.id);
               }}
               {...product}
             />

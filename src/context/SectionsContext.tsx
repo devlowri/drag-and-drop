@@ -29,6 +29,8 @@ interface SectionsContextI {
   moveSectionToBottom?: MoveSectionToBottomI;
   zoom: string;
   setZoom?: (zoom: string) => void;
+  removeProductFromProductsList?: RemoveProductFromProductsListI;
+  removeProductFromSection?: RemoveProductFromSectionI;
 }
 
 export interface SectionI {
@@ -75,6 +77,14 @@ interface MoveSectionDownI {
 
 interface MoveSectionToBottomI {
   (index: number): void;
+}
+
+interface RemoveProductFromProductsListI {
+  (id: number): void;
+}
+
+interface RemoveProductFromSectionI {
+  (id: number): void;
 }
 
 const SectionsContext = createContext<SectionsContextI>({
@@ -132,6 +142,9 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
     undefined
   );
   const [productId, setProductId] = useState<number | undefined>(undefined);
+  const [rowWithProductId, setRowWithProductId] = useState<number | undefined>(
+    undefined
+  );
   const [zoom, setZoom] = useState("100");
   const [productIsRemovable, setProductIsRemovable] = useState(false);
 
@@ -257,9 +270,10 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
                 (p) => p.id !== productId
               );
             } else {
-              console.log(
-                "aquí debo borrar el producto en una section distinta"
+              const sectionId = sections.findIndex((s) =>
+                s.products?.some((p) => p.id === productId)
               );
+              setRowWithProductId(sectionId);
             }
           }
           if (!updatedSection.products) {
@@ -358,17 +372,52 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
     });
   };
 
+  const removeProductFromProductsList: RemoveProductFromProductsListI = (
+    id
+  ) => {
+    setProducts((prevProducts) => prevProducts.filter((p) => p.id !== id));
+  };
+
+  const removeProductFromSection: RemoveProductFromSectionI = (id) => {
+    const _product = sections
+      .flatMap((section) => section.products || [])
+      .find((product) => product.id === id);
+    setSections((prevSections) =>
+      prevSections.map((section) => ({
+        ...section,
+        products: section.products
+          ? section.products.filter((product) => product.id !== id)
+          : section.products,
+      }))
+    );
+    setProducts((prevProducts) => [...prevProducts, _product as ProductI]);
+  };
+
   useEffect(() => {
     if (productIsRemovable) {
-      if (products.some((p) => p.id === productId)) {
+      if (rowWithProductId !== undefined) {
+        setSections((prevSections) =>
+          prevSections.map((section, index) => {
+            if (index === rowWithProductId && section.products) {
+              const newSection = {
+                ...section,
+                products: section.products.filter((p) => p.id !== productId),
+              };
+              return newSection;
+            }
+            return section;
+          })
+        );
+      } else if (products.some((p) => p.id === productId)) {
         setProducts((prevProducts) =>
           prevProducts.filter((p) => p.id !== productId)
         );
       }
       setProductId(undefined);
       setProductIsRemovable(false);
+      setRowWithProductId(undefined);
     }
-  }, [productIsRemovable, productId, products]);
+  }, [productIsRemovable, productId, products, rowWithProductId]);
 
   return (
     <SectionsContext.Provider
@@ -390,6 +439,8 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
         moveSectionToBottom,
         zoom,
         setZoom,
+        removeProductFromProductsList,
+        removeProductFromSection,
       }}
     >
       {children}
