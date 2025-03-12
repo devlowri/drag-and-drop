@@ -44,7 +44,7 @@ const AddProductModal = () => {
   return (
     <Modal open={addProductModal}>
       <div className="addProductModal">
-        <h2 className="addProductModalTitle">Añadir producto</h2>
+        <h2 className="addProductModalTitle">Add product</h2>
         <form className="addProductModalForm">
           <label>
             Name
