@@ -3,6 +3,7 @@ import { useSections } from "@/context/SectionsContext";
 import Options from "../organisms/Options";
 import Products from "../organisms/Products";
 import Sections from "../organisms/Sections";
+import AddProductModal from "../organisms/AddProductModal";
 
 const SectionsTemplate = () => {
   const { zoom } = useSections();
@@ -16,6 +17,7 @@ const SectionsTemplate = () => {
         <Products />
         <Sections />
       </div>
+      <AddProductModal />
     </section>
   );
 };
