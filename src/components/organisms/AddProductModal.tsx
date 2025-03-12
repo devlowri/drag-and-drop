@@ -89,14 +89,14 @@ const AddProductModal = () => {
               }}
               className="sectionRowButton"
             >
-              Cancelar
+              Cancel
             </button>
             <button
               type="submit"
               onClick={submitForm}
               className="sectionRowButton"
             >
-              Crear producto
+              Create product
             </button>
           </div>
         </form>
