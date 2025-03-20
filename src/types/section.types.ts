@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export interface SectionsProviderI {
   children: React.ReactNode;
 }
@@ -84,4 +86,13 @@ export interface SectionsContextI {
   addRow?: () => void;
   addNewProduct?: AddNewProductI;
   setAddProductModal?: (value: boolean) => void;
+}
+
+export interface useSectionActionsI {
+  setProductsToBeSaved: Dispatch<SetStateAction<ProductI[]>>;
+}
+
+export interface useProductActionsI {
+  sections: SectionI[];
+  setSections: Dispatch<SetStateAction<SectionI[]>>;
 }

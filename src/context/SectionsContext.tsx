@@ -1,22 +1,14 @@
 "use client";
-import { PRODUCTS_DEFAULT_DATA } from "@/mock/productsDefaultData";
+import { useProductActions } from "@/hooks/useProducts";
+import { useSectionActions } from "@/hooks/useSections";
 import {
-  AddNewProductI,
   HandleProductDragStartI,
   HandleProductDropI,
-  MoveSectionDownI,
-  MoveSectionToBottomI,
-  MoveSectionToTopI,
-  MoveSectionUpI,
   ProductI,
-  RemoveProductFromProductsListI,
-  RemoveProductFromSectionI,
-  RemoveSectionI,
   SectionAligmentT,
   SectionI,
   SectionsContextI,
   SectionsProviderI,
-  UpdateSectionAligmentI,
 } from "@/types/section.types";
 import React, {
   createContext,
@@ -35,15 +27,7 @@ const SectionsContext = createContext<SectionsContextI>({
 
 export const PRODUCTS_PER_SECTION = 3;
 
-const DEFAULT_SECTION: SectionI = { alignment: "left", products: [] };
-
 const SectionsProvider = ({ children }: SectionsProviderI) => {
-  const [sections, setSections] = useState<SectionI[]>([
-    structuredClone(DEFAULT_SECTION),
-  ]);
-  const [products, setProducts] = useState<ProductI[]>([
-    ...PRODUCTS_DEFAULT_DATA,
-  ]);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState<SectionAligmentT | undefined>(
     undefined
@@ -54,8 +38,29 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
   );
   const [zoom, setZoom] = useState("100");
   const [productIsRemovable, setProductIsRemovable] = useState(false);
-  const [addProductModal, setAddProductModal] = useState(false);
+
   const [productsToBeSaved, setProductsToBeSaved] = useState<ProductI[]>([]);
+
+  const {
+    sections,
+    setSections,
+    updateSectionAligment,
+    removeSection,
+    moveSectionToTop,
+    moveSectionUp,
+    moveSectionDown,
+    moveSectionToBottom,
+    addRow,
+  } = useSectionActions({ setProductsToBeSaved });
+  const {
+    products,
+    setProducts,
+    addProductModal,
+    setAddProductModal,
+    removeProductFromProductsList,
+    removeProductFromSection,
+    addNewProduct,
+  } = useProductActions({ sections, setSections });
 
   const ghostRef = useRef<HTMLDivElement | null>(null);
 
@@ -217,119 +222,6 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
     });
   };
 
-  const updateSectionAligment: UpdateSectionAligmentI = (value, index) => {
-    setSections((prevSections) =>
-      prevSections.map((section, i) =>
-        i === index ? { ...section, alignment: value } : section
-      )
-    );
-  };
-
-  const removeSection: RemoveSectionI = (index) => {
-    setSections((prevSections) =>
-      prevSections.filter((_, i) => {
-        if (i === index) {
-          const _products = prevSections[index].products;
-          if (_products) setProductsToBeSaved(_products);
-        }
-        return i !== index;
-      })
-    );
-  };
-
-  const moveSectionToTop: MoveSectionToTopI = (index) => {
-    setSections((prevSections) => {
-      if (index <= 0) return prevSections;
-
-      const newSections = [...prevSections];
-      const [movedSection] = newSections.splice(index, 1);
-      newSections.unshift(movedSection);
-
-      return newSections;
-    });
-  };
-
-  const moveSectionUp: MoveSectionUpI = (index) => {
-    setSections((prevSections) => {
-      if (index <= 0) return prevSections;
-
-      const newSections = [...prevSections];
-      [newSections[index], newSections[index - 1]] = [
-        newSections[index - 1],
-        newSections[index],
-      ];
-
-      return newSections;
-    });
-  };
-
-  const moveSectionDown: MoveSectionDownI = (index) => {
-    setSections((prevSections) => {
-      if (index >= prevSections.length - 1) return prevSections;
-
-      const newSections = [...prevSections];
-      [newSections[index], newSections[index + 1]] = [
-        newSections[index + 1],
-        newSections[index],
-      ];
-
-      return newSections;
-    });
-  };
-
-  const moveSectionToBottom: MoveSectionToBottomI = (index) => {
-    setSections((prevSections) => {
-      if (index >= prevSections.length - 1) return prevSections;
-
-      const newSections = [...prevSections];
-      const [movedSection] = newSections.splice(index, 1);
-      newSections.push(movedSection);
-
-      return newSections;
-    });
-  };
-
-  const removeProductFromProductsList: RemoveProductFromProductsListI = (
-    id
-  ) => {
-    setProducts((prevProducts) => prevProducts.filter((p) => p.id !== id));
-  };
-
-  const removeProductFromSection: RemoveProductFromSectionI = (id) => {
-    const _product = sections
-      .flatMap((section) => section.products || [])
-      .find((product) => product.id === id);
-    setSections((prevSections) =>
-      prevSections.map((section) => ({
-        ...section,
-        products: section.products
-          ? section.products.filter((product) => product.id !== id)
-          : section.products,
-      }))
-    );
-    setProducts((prevProducts) => [...prevProducts, _product as ProductI]);
-  };
-
-  const addRow = () => {
-    setSections((prevSections) => [
-      ...prevSections,
-      structuredClone(DEFAULT_SECTION),
-    ]);
-  };
-
-  const addNewProduct: AddNewProductI = (e, data) => {
-    e.preventDefault();
-    setProducts((prevProducts) => [
-      { ...data, id: Date.now() },
-      ...prevProducts,
-    ]);
-    setAddProductModal(false);
-    const productsListElement = document.getElementsByClassName("products");
-    if (productsListElement[0]) {
-      productsListElement[0].scrollTop = 0;
-    }
-  };
-
   useEffect(() => {
     if (productIsRemovable) {
       if (rowWithProductId !== undefined) {
@@ -354,14 +246,21 @@ const SectionsProvider = ({ children }: SectionsProviderI) => {
       setProductIsRemovable(false);
       setRowWithProductId(undefined);
     }
-  }, [productIsRemovable, productId, products, rowWithProductId]);
+  }, [
+    productIsRemovable,
+    productId,
+    products,
+    rowWithProductId,
+    setSections,
+    setProducts,
+  ]);
 
   useEffect(() => {
     if (productsToBeSaved.length > 0) {
       setProducts((prevProducts) => [...prevProducts, ...productsToBeSaved]);
       setProductsToBeSaved([]);
     }
-  }, [productsToBeSaved]);
+  }, [productsToBeSaved, setProducts]);
 
   return (
     <SectionsContext.Provider
