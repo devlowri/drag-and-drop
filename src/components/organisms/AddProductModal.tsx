@@ -42,7 +42,12 @@ const AddProductModal = () => {
   }, [addProductModal]);
 
   return (
-    <Modal open={addProductModal}>
+    <Modal
+      open={addProductModal}
+      onClose={() => {
+        if (setAddProductModal) setAddProductModal(false);
+      }}
+    >
       <div className="addProductModal">
         <h2 className="addProductModalTitle">Add product</h2>
         <form className="addProductModalForm">
