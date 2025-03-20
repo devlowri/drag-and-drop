@@ -1,5 +1,23 @@
 "use client";
 import { PRODUCTS_DEFAULT_DATA } from "@/mock/productsDefaultData";
+import {
+  AddNewProductI,
+  HandleProductDragStartI,
+  HandleProductDropI,
+  MoveSectionDownI,
+  MoveSectionToBottomI,
+  MoveSectionToTopI,
+  MoveSectionUpI,
+  ProductI,
+  RemoveProductFromProductsListI,
+  RemoveProductFromSectionI,
+  RemoveSectionI,
+  SectionAligmentT,
+  SectionI,
+  SectionsContextI,
+  SectionsProviderI,
+  UpdateSectionAligmentI,
+} from "@/types/section.types";
 import React, {
   createContext,
   useContext,
@@ -7,94 +25,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-
-interface SectionsProviderI {
-  children: React.ReactNode;
-}
-
-interface SectionsContextI {
-  sections: SectionI[];
-  products: ProductI[];
-  isDragging?: boolean;
-  handleProductDragStart?: HandleProductDragStartI;
-  handleProductDrag?: (e: React.DragEvent<HTMLDivElement>) => void;
-  handleProductDragEnd?: () => void;
-  handleProductDragOver?: (e: React.DragEvent<HTMLDivElement>) => void;
-  handleProductDrop?: HandleProductDropI;
-  handleProductDragLeave?: (e: React.DragEvent<HTMLDivElement>) => void;
-  updateSectionAligment?: UpdateSectionAligmentI;
-  removeSection?: RemoveSectionI;
-  moveSectionToTop?: MoveSectionToTopI;
-  moveSectionUp?: MoveSectionUpI;
-  moveSectionDown?: MoveSectionDownI;
-  moveSectionToBottom?: MoveSectionToBottomI;
-  zoom: string;
-  setZoom?: (zoom: string) => void;
-  removeProductFromProductsList?: RemoveProductFromProductsListI;
-  removeProductFromSection?: RemoveProductFromSectionI;
-  addRow?: () => void;
-  addNewProduct?: AddNewProductI;
-  addProductModal: boolean;
-  setAddProductModal?: (value: boolean) => void;
-}
-
-export interface SectionI {
-  products?: ProductI[];
-  alignment?: SectionAligmentT;
-}
-
-export type SectionAligmentT = "left" | "center" | "right";
-
-export interface ProductI {
-  id: number;
-  image: string;
-  name: string;
-  price: number;
-}
-
-interface HandleProductDragStartI {
-  (e: React.DragEvent<HTMLDivElement>, id: number): void;
-}
-
-interface HandleProductDropI {
-  (e: React.DragEvent<HTMLDivElement>, rowIndex: number): void;
-}
-
-interface UpdateSectionAligmentI {
-  (value: SectionAligmentT, index: number): void;
-}
-
-interface RemoveSectionI {
-  (index: number): void;
-}
-
-interface MoveSectionToTopI {
-  (index: number): void;
-}
-
-interface MoveSectionUpI {
-  (index: number): void;
-}
-
-interface MoveSectionDownI {
-  (index: number): void;
-}
-
-interface MoveSectionToBottomI {
-  (index: number): void;
-}
-
-interface RemoveProductFromProductsListI {
-  (id: number): void;
-}
-
-interface RemoveProductFromSectionI {
-  (id: number): void;
-}
-
-interface AddNewProductI {
-  (e: React.MouseEvent<HTMLButtonElement>, data: Omit<ProductI, "id">): void;
-}
 
 const SectionsContext = createContext<SectionsContextI>({
   sections: [],

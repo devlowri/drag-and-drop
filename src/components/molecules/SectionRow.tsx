@@ -1,9 +1,5 @@
 "use client";
-import {
-  PRODUCTS_PER_SECTION,
-  SectionI,
-  useSections,
-} from "@/context/SectionsContext";
+import { PRODUCTS_PER_SECTION, useSections } from "@/context/SectionsContext";
 import ProductCard from "./ProductCard";
 import AlignLeftIcon from "../atoms/icons/alignLeft";
 import AlignCenterIcon from "../atoms/icons/alignCenter";
@@ -13,6 +9,7 @@ import ArrowBarToUpIcon from "../atoms/icons/arrowBarToUp";
 import ArrowBarToDownIcon from "../atoms/icons/arrowBarToDown";
 import ArrowNarrowDownIcon from "../atoms/icons/arrowNarrowDown";
 import ArrowNarrowUpIcon from "../atoms/icons/arrowNarrowUp";
+import { SectionI } from "@/types/section.types";
 
 interface SectionRowI {
   rowIndex: number;

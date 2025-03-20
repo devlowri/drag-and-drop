@@ -1,7 +1,8 @@
 "use client";
-import { ProductI, useSections } from "@/context/SectionsContext";
+import { useSections } from "@/context/SectionsContext";
 import Image from "next/image";
 import TrashIcon from "../atoms/icons/trash";
+import { ProductI } from "@/types/section.types";
 
 interface ProductCardId extends ProductI {
   removeFn?: () => void;
