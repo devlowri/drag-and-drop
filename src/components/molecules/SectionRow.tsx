@@ -70,6 +70,7 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
       </div>
       <div className="sectionRowPosition">
         <button
+          aria-label="Move section to the top"
           className="sectionRowButton"
           onClick={() => {
             if (moveSectionToTop) moveSectionToTop(rowIndex);
@@ -79,6 +80,7 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
           <ArrowBarToUpIcon />
         </button>
         <button
+          aria-label="Move section up one position"
           className="sectionRowButton up"
           onClick={() => {
             if (moveSectionUp) moveSectionUp(rowIndex);
@@ -88,6 +90,7 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
           <ArrowNarrowUpIcon />
         </button>
         <button
+          aria-label="Move section down one position"
           className="sectionRowButton down"
           onClick={() => {
             if (moveSectionDown) moveSectionDown(rowIndex);
@@ -97,6 +100,7 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
           <ArrowNarrowDownIcon />
         </button>
         <button
+          aria-label="Move section to the bottom"
           className="sectionRowButton"
           onClick={() => {
             if (moveSectionToBottom) moveSectionToBottom(rowIndex);
@@ -109,6 +113,7 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
       <div className="sectionRowOptions">
         <div className="sectionRowOptionsAlignments">
           <button
+            aria-label="Align content to the left"
             className={`${section?.alignment === "left" ? "selected" : ""}`}
             onClick={() => {
               if (updateSectionAligment)
@@ -119,6 +124,7 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
             <AlignLeftIcon />
           </button>
           <button
+            aria-label="Align content to center"
             className={`${section?.alignment === "center" ? "selected" : ""}`}
             onClick={() => {
               if (updateSectionAligment)
@@ -129,6 +135,7 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
             <AlignCenterIcon />
           </button>
           <button
+            aria-label="Align content to the right"
             className={`${section?.alignment === "right" ? "selected" : ""}`}
             onClick={() => {
               if (updateSectionAligment)
@@ -140,6 +147,7 @@ const SectionRow = ({ rowIndex, section }: SectionRowI) => {
           </button>
         </div>
         <button
+          aria-label="Remove section"
           className="sectionRowButton"
           onClick={() => {
             if (removeSection) removeSection(rowIndex);

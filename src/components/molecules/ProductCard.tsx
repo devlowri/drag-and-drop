@@ -27,6 +27,7 @@ const ProductCard = ({ removeFn, id, image, name, price }: ProductCardId) => {
       onDragEnd={handleProductDragEnd}
     >
       <button
+        aria-label="Remove product"
         className="productCardRemove"
         onClick={() => {
           if (removeFn) return removeFn();
